@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Webservice.Services;
 using Webservice.Sql;
 
 namespace Webservice
@@ -30,6 +31,7 @@ namespace Webservice
             services.AddControllers();
             services.AddDbContextPool<ContextDb>(op => op.UseSqlServer(Configuration.GetConnectionString("Cnn")));
             services.AddTransient<ContextDb>();
+            services.AddTransient<IRepository, Repository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

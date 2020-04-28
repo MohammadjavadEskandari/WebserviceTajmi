@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Webservice.Enum;
 using Webservice.Model;
+using Webservice.Services;
 using Webservice.Sql;
 using Webservice.ViewModel;
 
@@ -19,11 +20,13 @@ namespace Webservice.Controllers
     {
         private readonly IConfiguration configuration;
         private readonly ContextDb db;
+        private readonly IRepository repo;
 
-        public LabsController(IConfiguration configuration,ContextDb _db)
+        public LabsController(IConfiguration configuration,ContextDb _db,IRepository repository)
         {
             this.configuration = configuration;
             this.db = _db;
+            this.repo = repository;
         }
 
         [HttpGet]
@@ -34,27 +37,29 @@ namespace Webservice.Controllers
 
 
         // GET: api/Labs/TbName
-        [HttpGet("{DataSource},{TBName}")]
-        public List<GetLabViewModel> Get(string DataSource, string TBName)
+        [HttpGet("{Cnn},{TBName},{PrimaryKey}")]
+        public List<GetDataViewModel> Get(string Cnn, string TBName,string PrimaryKey)
         {
-            var SyncTable = db.SyncTable.ToList().OrderBy(f=>f.CreateDate);
-            var AllLabs = db.TblLabs.ToList();
-            List<GetLabViewModel> labsSync = new List<GetLabViewModel>();
-            foreach(var item in SyncTable)
-            {
-                labsSync.Add(
-                    new GetLabViewModel()
-                    {
-                        lab = AllLabs.Where(f => f.LabID == item.TableID).FirstOrDefault(),
-                        CreateDate=item.CreateDate,
-                        StatusID=(StatusEnum)item.StatusID
-                    }
-                    ) ;
+            List<GetDataViewModel> DataSync = repo.GetDataViewModels(Cnn, TBName, PrimaryKey);
+            //var data = repo.GetRecordFromSyncTable(DataSource,TBName);
+
+            //var AllLabs = db.TblLabs.ToList();
+            //List<GetDataViewModel> labsSync = new List<GetDataViewModel>();
+            //foreach(var item in SyncTable)
+            //{
+            //    labsSync.Add(
+            //        new GetDataViewModel()
+            //        {
+            //            lab = AllLabs.Where(f => f.LabID == item.TableID).FirstOrDefault(),
+            //            CreateDate=item.CreateDate,
+            //            StatusID=(StatusEnum)item.StatusID
+            //        }
+            //        ) ;
 
 
-                //labsSync.Add(AllLabs.Where(f => f.LabID == item.TableID). .FirstOrDefault());
-            }
-            return labsSync;
+            //    //labsSync.Add(AllLabs.Where(f => f.LabID == item.TableID). .FirstOrDefault());
+            //}
+            return DataSync;
         }
     }
 }

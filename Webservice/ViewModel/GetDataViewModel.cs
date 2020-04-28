@@ -7,7 +7,7 @@ using Webservice.Model;
 
 namespace Webservice.ViewModel
 {
-    public class GetLabViewModel
+    public class GetDataViewModel
     {
         public Lab lab { get; set; }
         public DateTime? CreateDate { get; set; }
