@@ -6,7 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using Webservice.Enum;
 using Webservice.Model;
 using Webservice.ViewModel;
 
@@ -17,7 +19,7 @@ namespace Webservice.Services
         private List<SyncTable> GetRecordFromSyncTable(string Cnn, string TbName)
         {
 
-            string sql = "select * from SyncTable where TableName= " + TbName;
+            string sql = "select * from SyncTable where TableName= " + TbName + "order by CreateDate asc";
 
             List<SyncTable> data = new List<SyncTable>();
 
@@ -33,9 +35,14 @@ namespace Webservice.Services
         {
             var s = Sync.Select(f => f.TableID).ToArray();
 
+            TbName = TbName.Replace("'", "");
+
             SqlConnection con = new SqlConnection(Cnn);
             string qu = "select * from " + TbName + " where " + PrimaryKey + " in(";
             int i = 1;
+
+           
+
             foreach (var item in s)
             {
                 if (i == s.Count())
@@ -49,7 +56,6 @@ namespace Webservice.Services
 
             SqlDataAdapter adp = new SqlDataAdapter(qu, con);
             DataTable dt = new DataTable();
-
 
             try
             {
@@ -72,13 +78,31 @@ namespace Webservice.Services
 
             DataTable Records = GetRecordFromTable(Cnn, TbName, SyncTable, PrimaryKey);
 
-            List<GetDataViewModel> labsSync = new List<GetDataViewModel>();
+            List<GetDataViewModel> DataSync = new List<GetDataViewModel>();
 
-            foreach (var item in SyncTable)
+
+
+            //DataRow dr = Records.NewRow();
+
+            //dr = Records.Select(PrimaryKey + "=2712")[0];
+            //var dddd = JsonConvert.SerializeObject(dr);
+
+
+            foreach (var item in SyncTable.OrderBy(f=>f.CreateDate))
             {
+                GetDataViewModel d = new GetDataViewModel()
+                {
+                    DataUp = Records.Select(PrimaryKey + "=" + item.TableID).CopyToDataTable() ,
+                    CreateDate = item.CreateDate,
+                    StatusID = (StatusEnum) item.StatusID
+                };
+
+                DataSync.Add(d);
                 var ds = Records.Select(PrimaryKey + "=" + item.TableID);
             }
 
+
+            var dddd = JsonConvert.SerializeObject(DataSync);
 
             //foreach (var item in SyncTable)
             //{
@@ -94,7 +118,7 @@ namespace Webservice.Services
 
             //    //labsSync.Add(AllLabs.Where(f => f.LabID == item.TableID). .FirstOrDefault());
             //}
-            return labsSync;
+            return DataSync;
         }
     }
 }

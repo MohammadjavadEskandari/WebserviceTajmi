@@ -25,6 +25,7 @@ namespace Webservice.Sql
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Lab>().HasKey(f => f.LabID);
+            modelBuilder.Entity<SyncTable>().HasKey(f => f.ID);
         }
     }
 }
