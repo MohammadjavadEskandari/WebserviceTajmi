@@ -94,7 +94,8 @@ namespace Webservice.Services
                 {
                     DataUp = Records.Select(PrimaryKey + "=" + item.TableID).CopyToDataTable() ,
                     CreateDate = item.CreateDate,
-                    StatusID = (StatusEnum) item.StatusID
+                    StatusID = (StatusEnum) item.StatusID,
+                    TableName= TbName
                 };
 
                 DataSync.Add(d);

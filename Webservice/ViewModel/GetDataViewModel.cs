@@ -13,6 +13,7 @@ namespace Webservice.ViewModel
         public DataTable DataUp { get; set; }
         public DateTime? CreateDate { get; set; }
         public StatusEnum StatusID { get; set; }
+        public string TableName { get; set; }
 
     }
 }
